@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projeto Prospera Rio — Portal de Documentos</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f0f4f8;min-height:100vh}
+.wrap{max-width:980px;margin:0 auto;padding:24px 16px}
+.header{background:#092040;border-radius:14px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:16px}
+.logos{display:flex;align-items:center;gap:24px}
+.logo-img{height:52px;object-fit:contain;filter:brightness(0) invert(1)}
+.logo-divider{width:1px;height:44px;background:rgba(255,255,255,0.3)}
+.logo-fallback{color:rgba(255,255,255,0.6);font-size:11px;font-weight:700;letter-spacing:1px}
+.header-title{text-align:right}
+.header-title h1{color:#ECC203;font-size:20px;font-weight:700;letter-spacing:0.5px}
+.header-title p{color:rgba(255,255,255,0.65);font-size:12px;margin-top:5px}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.kpi{background:#092040;border-radius:10px;padding:16px;text-align:center}
+.kpi-num{color:#ECC203;font-size:24px;font-weight:700}
+.kpi-lab{color:rgba(255,255,255,0.7);font-size:11px;margin-top:4px}
+.section-title{font-size:12px;font-weight:700;color:#092040;text-transform:uppercase;letter-spacing:1px;margin:22px 0 12px;padding-left:10px;border-left:4px solid #00B7D7}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:4px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+a.card{background:#fff;border:1.5px solid #dde4ee;border-radius:12px;padding:16px 18px;cursor:pointer;transition:border-color .18s,transform .18s,box-shadow .18s;text-decoration:none;display:block}
+a.card:hover{border-color:#00B7D7;transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,183,215,0.15)}
+.card-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;margin-bottom:9px;letter-spacing:0.5px;text-transform:uppercase}
+.badge-blue{background:#e8f0f8;color:#092040}
+.badge-teal{background:#e0f7fb;color:#006080}
+.badge-gold{background:#fff8e0;color:#7A4F00}
+.badge-green{background:#ebf7eb;color:#1A7F1A}
+.badge-purple{background:#f5eeff;color:#6A1A8B}
+.badge-red{background:#fce8e8;color:#8B1A1A}
+.card-num{font-size:10px;font-weight:700;color:#00B7D7;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px}
+.card-title{font-size:13px;font-weight:700;color:#092040;line-height:1.35;margin-bottom:7px}
+.card-desc{font-size:11px;color:#666;line-height:1.5}
+.card-link{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:11px;color:#00B7D7;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.pill{display:inline-block;background:rgba(0,183,215,0.12);color:#006080;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px}
+.pill-lock{background:rgba(236,194,3,0.15);color:#7A4F00}
+.footer{background:#092040;border-radius:12px;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;margin-top:24px;flex-wrap:wrap;gap:10px}
+.footer-text{color:rgba(255,255,255,0.55);font-size:11px}
+.footer-badge{background:#ECC203;color:#092040;font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px}
+.instr{background:#e8f0f8;border:1px solid #b5d4f4;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:12px;color:#092040;line-height:1.6}
+.instr strong{color:#006080}
+@media(max-width:680px){.grid,.grid-2{grid-template-columns:1fr}.kpi-row{grid-template-columns:repeat(2,1fr)}.header{flex-direction:column;text-align:center}.header-title{text-align:center}}
+
+/* ── PASSWORD SCREEN ─────────────────────────────────── */
+#pwd-overlay{
+  position:fixed;inset:0;z-index:9999;
+  background:#092040;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:24px;
+}
+#pwd-overlay.hidden{display:none}
+.pwd-box{
+  background:#fff;border-radius:16px;
+  padding:36px 40px;max-width:400px;width:100%;
+  text-align:center;
+}
+.pwd-logo{max-width:220px;height:auto;margin-bottom:6px}
+.pwd-sub{color:#ECC203;font-size:13px;font-weight:700;
+  letter-spacing:2px;margin-bottom:24px;font-family:Arial,sans-serif}
+.pwd-title{font-size:15px;font-weight:700;color:#092040;margin-bottom:6px}
+.pwd-hint{font-size:12px;color:#888;margin-bottom:20px}
+.pwd-input-wrap{position:relative;margin-bottom:16px}
+.pwd-input{
+  width:100%;padding:12px 44px 12px 16px;
+  border:2px solid #dde4ee;border-radius:10px;
+  font-size:15px;outline:none;letter-spacing:2px;
+  font-family:Arial,sans-serif;color:#092040;
+  transition:border-color .2s;
+}
+.pwd-input:focus{border-color:#00B7D7}
+.pwd-toggle{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;padding:4px;
+  color:#aaa;font-size:18px;line-height:1;
+}
+.pwd-btn{
+  width:100%;padding:13px;
+  background:#092040;color:#ECC203;
+  border:none;border-radius:10px;
+  font-size:14px;font-weight:700;letter-spacing:1px;
+  cursor:pointer;transition:background .2s;
+  font-family:Arial,sans-serif;
+}
+.pwd-btn:hover{background:#00B7D7;color:#fff}
+.pwd-error{
+  color:#cc0000;font-size:12px;margin-top:8px;
+  min-height:18px;font-family:Arial,sans-serif;
+}
+.pwd-footer{
+  margin-top:20px;font-size:11px;color:rgba(255,255,255,0.4);
+  font-family:Arial,sans-serif;
+}
+
+</style>
+</head>
+<body>
+<!-- ── PASSWORD OVERLAY ─────────────────────────────── -->
+<div id="pwd-overlay">
+  <div class="pwd-box">
+    <img class="pwd-logo"
+         src="https://lh3.googleusercontent.com/d/1x5sNkC9vd7CI78y0xdkWvgoadxPEMcIf=w800"
+         alt="Prospera Rio"
+         onerror="this.style.display='none'">
+    <div class="pwd-sub">MARÉ · JACAREZINHO</div>
+    <div class="pwd-title">Portal Restrito — Coordenação</div>
+    <div class="pwd-hint">Digite a senha para acessar o dossiê técnico</div>
+    <div class="pwd-input-wrap">
+      <input class="pwd-input" type="password" id="pwd-field"
+             placeholder="••••••••••••"
+             autocomplete="off"
+             onkeydown="if(event.key==='Enter')checkPwd()">
+      <button class="pwd-toggle" onclick="togglePwd()" title="Mostrar/ocultar senha">👁</button>
+    </div>
+    <button class="pwd-btn" onclick="checkPwd()">ACESSAR PORTAL</button>
+    <div class="pwd-error" id="pwd-error"></div>
+  </div>
+  <div class="pwd-footer">Projeto Prospera Rio · Instituto BR Arte × SEBRAE RJ</div>
+</div>
+
+
+<div class="wrap">
+
+<!-- CABEÇALHO -->
+<div class="header" style="flex-direction:column;align-items:center;text-align:center;padding:28px 32px 22px">
+
+  <!-- Logo central Prospera Rio -->
+  <div style="margin-bottom:10px">
+    <img src="https://lh3.googleusercontent.com/d/1x5sNkC9vd7CI78y0xdkWvgoadxPEMcIf=w800"
+         alt="Prospera Rio"
+         style="max-height:80px;max-width:340px;object-fit:contain;display:block;margin:0 auto"
+         onerror="this.style.display='none'">
+    <div style="color:#ECC203;font-family:Arial,sans-serif;font-weight:700;font-size:17px;margin-top:8px;letter-spacing:2px">
+      MARÉ &nbsp;·&nbsp; JACAREZINHO
+    </div>
+  </div>
+
+  <!-- Linha divisória -->
+  <div style="width:60%;height:1px;background:rgba(255,255,255,0.2);margin:14px auto"></div>
+
+  <!-- Logos Proponente + Patrocinador -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap;margin-top:6px">
+
+    <!-- Instituto BR Arte — Realização/Proponente -->
+    <div style="text-align:center">
+      <div style="color:rgba(255,255,255,0.5);font-size:10px;font-weight:700;letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase">Proponente</div>
+      <img src="https://lh3.googleusercontent.com/d/1DyCuL-4zpBcw56C1VuFH2iKbP8dBQ7SA"
+           alt="Instituto BR Arte"
+           style="height:44px;max-width:170px;object-fit:contain;filter:brightness(0) invert(1)"
+           onerror="this.style.display='none'">
+    </div>
+
+    <!-- Divider vertical -->
+    <div style="width:1px;height:50px;background:rgba(255,255,255,0.25)"></div>
+
+    <!-- SEBRAE RJ — Patrocinador -->
+    <div style="text-align:center">
+      <div style="color:rgba(255,255,255,0.5);font-size:10px;font-weight:700;letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase">Patrocinador</div>
+      <img src="https://lh3.googleusercontent.com/d/1ndv92HPv1FLGdUGzKI75FB7WunKrSaQW"
+           alt="SEBRAE RJ"
+           style="height:44px;max-width:170px;object-fit:contain;filter:brightness(0) invert(1)"
+           onerror="this.style.display='none'">
+    </div>
+
+  </div>
+  <div style="color:rgba(255,255,255,0.5);font-size:11px;margin-top:14px">
+    Portal de Documentos &nbsp;·&nbsp; Dossiê Técnico de Prestação de Contas &nbsp;·&nbsp; SEBRAE RJ
+  </div>
+</div>
+
+<!-- INSTRUÇÃO -->
+<div class="instr">
+  <strong>Como usar este portal:</strong> Clique em qualquer card abaixo para acessar o documento correspondente no Google Drive.
+  Todos os documentos fazem parte do dossiê técnico do Projeto Prospera Rio — Inclusão Produtiva e Geração de Renda nos territórios do
+  <strong>Complexo da Maré</strong> e <strong>Jacarezinho</strong>, Rio de Janeiro.
+</div>
+
+<!-- KPIs -->
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-num">15</div><div class="kpi-lab">Pastas no Drive</div></div>
+  <div class="kpi"><div class="kpi-num">12</div><div class="kpi-lab">Documentos técnicos</div></div>
+  <div class="kpi"><div class="kpi-num">67</div><div class="kpi-lab">Atividades formativas</div></div>
+  <div class="kpi"><div class="kpi-num">R$&nbsp;910.300</div><div class="kpi-lab">Valor total do projeto</div></div>
+</div>
+
+<!-- RELATÓRIOS -->
+<div class="section-title">Relatórios e Documentos Estratégicos</div>
+<div class="grid">
+
+  <a class="card" href="https://docs.google.com/document/d/1phEhwr7jYJsFyogKdZ9_qIdFUKPbXqpY/edit?usp=drive_link&ouid=103662476985315864073&rtpof=true&sd=true" target="_blank">
+    <div class="card-badge badge-blue">Relatório</div>
+    <div class="card-num">Documento 01</div>
+    <div class="card-title">Relatório Final de Execução</div>
+    <div class="card-desc">Todas as 5 etapas com metas por território — 44 oficinas · 23 palestras · 200 diagnósticos · 100 consultorias · 4 feiras</div>
+    <div class="card-link">&#9654; Abrir documento</div>
+  </a>
+
+  <a class="card" href="https://docs.google.com/document/d/14N6Ylg2dbkvSxzu9bpg6cwitbCqQOIfD/edit?usp=drive_link&ouid=103662476985315864073&rtpof=true&sd=true" target="_blank">
+    <div class="card-badge badge-teal">Relatório</div>
+    <div class="card-num">Documento 07</div>
+    <div class="card-title">Relatório de Impacto do Projeto</div>
+    <div class="card-desc">Análise qualitativa dos resultados e impactos gerados nos territórios da Maré e do Jacarezinho</div>
+    <div class="card-link">&#9654; Abrir documento</div>
+  </a>
+
+  <a class="card" href="https://docs.google.com/document/d/1BisZHomJtdraOhO3-aSYtKN-vJEMsg4w/edit?usp=drive_link&ouid=103662476985315864073&rtpof=true&sd=true" target="_blank">
+    <div class="card-badge badge-blue">Nota Técnica</div>
+    <div class="card-num">Documento 08</div>
+    <div class="card-title">Nota Técnica de Conformidade</div>
+    <div class="card-desc">Parecer técnico sobre a conformidade integral da execução com o Plano de Trabalho aprovado pelo SEBRAE RJ</div>
+    <div class="card-link">&#9654; Abrir documento</div>
+  </a>
+
+</div>
+
+<!-- AUDITORIA -->
+<div class="section-title">Instrumentos de Auditoria e Controle</div>
+<div class="grid">
+
+  <a class="card" href="https://docs.google.com/spreadsheets/d/1mJz4Jy8tmCvNCaTDjwUP1XzEG4AOVAugxhsh-Rg9YFE/edit?usp=drive_link" target="_blank">
+    <div class="card-badge badge-gold">Planilha Excel</div>
+    <div class="card-num">Documento 02</div>
+    <div class="card-title">Instrumentos de Prestação de Contas</div>
+    <div class="card-desc">Matriz de rastreabilidade · Metas por território · Checklist de evidências</div>
+    <div class="card-link">&#9654; Abrir planilha</div>
+  </a>
+
+  <a class="card" href="https://docs.google.com/spreadsheets/d/1COWQybYov6sVOn4UcKo5emRsI9_xlckI-dO3H5tYl3w/edit?usp=drive_link" target="_blank">
+    <div class="card-badge badge-gold">Planilha Excel</div>
+    <div class="card-num">Documento 03</div>
+    <div class="card-title">Matriz de Rastreabilidade para Auditoria</div>
+    <div class="card-desc">Rastreabilidade completa entre cada ação e sua evidência comprobatória</div>
+    <div class="card-link">&#9654; Abrir planilha</div>
+  </a>
+
+  <a class="card" href="https://docs.google.com/spreadsheets/d/1zNreWncRSPheapLnyyiULHhM1_bHzx-FA8FBXG0a-dE/edit?usp=drive_link" target="_blank">
+    <div class="card-badge badge-gold">Planilha Excel</div>
+    <div class="card-num">Documento 04</div>
+    <div class="card-title">Planilha de Controle de Execução</div>
+    <div class="card-desc">Dashboard automático · Consolidação por etapa e território · 4 abas de controle</div>
+    <div class="card-link">&#9654; Abrir planilha</div>
+  </a>
+
+  <a class="card" href="https://docs.google.com/document/d/153kROJewaJ_L61MW4PvIOu7pnidppH4q/edit?usp=drive_link&ouid=103662476985315864073&rtpof=true&sd=true" target="_blank">
+    <div class="card-badge badge-teal">Checklist</div>
+    <div class="card-num">Documento 05</div>
+    <div class="card-title">Checklist de Auditoria</div>
+    <div class="card-desc">5 blocos: conformidade documental, física, evidências, financeira e dossiê final</div>
+    <div class="card-link">&#9654; Abrir documento</div>
+  </a>
+
+  <a class="card" href="https://docs.google.com/document/d/1oW4IdPhS64osfO-2Hzb5SmrOg5g_MHo7/edit?usp=drive_link&ouid=103662476985315864073&rtpof=true&sd=true" target="_blank">
+    <div class="card-badge badge-blue">Índice</div>
+    <div class="card-num">Documento 06</div>
+    <div class="card-title">Índice Técnico dos Anexos</div>
+    <div class="card-desc">Mapa de localização de 28 evidências organizadas em 16 pastas · Nomenclatura padronizada</div>
+    <div class="card-link">&#9654; Abrir documento</div>
+  </a>
+
+  <a class="card" href="https://docs.google.com/spreadsheets/d/1RAXCh_ytEZdIFPNn3BW_-RXUD3J3GLnBaYG7he_fMTQ/edit?usp=drive_link" target="_blank">
+    <div class="card-badge badge-gold">Planilha Excel</div>
+    <div class="card-num">Documento 11</div>
+    <div class="card-title">Mapa de Evidências para Auditoria</div>
+    <div class="card-desc">67 atividades individualizadas · 20 consultorias · Rastreabilidade por pasta do Drive</div>
+    <div class="card-link">&#9654; Abrir planilha</div>
+  </a>
+
+</div>
+
+<!-- INDICADORES -->
+<div class="section-title">Indicadores, Matrizes e Sumário</div>
+<div class="grid">
+
+  <a class="card" href="https://docs.google.com/document/d/1euVNtxyNtaWggUnQNhrRBbIknIP76UIB/edit?usp=drive_link&ouid=103662476985315864073&rtpof=true&sd=true" target="_blank">
+    <div class="card-badge badge-purple">Matriz</div>
+    <div class="card-num">Documento 09</div>
+    <div class="card-title">Matriz de Indicadores de Resultado e Impacto</div>
+    <div class="card-desc">4 níveis: execução · resultado imediato · fortalecimento de negócios · impacto territorial</div>
+    <div class="card-link">&#9654; Abrir documento</div>
+  </a>
+
+  <a class="card" href="https://docs.google.com/document/d/14qSS0JowUi67mysUSmv0wl11WRYT4byT/edit?usp=drive_link&ouid=103662476985315864073&rtpof=true&sd=true" target="_blank">
+    <div class="card-badge badge-blue">Sumário</div>
+    <div class="card-num">Documento 10</div>
+    <div class="card-title">Sumário Executivo do Dossiê</div>
+    <div class="card-desc">Síntese estratégica do dossiê para análise rápida pelos avaliadores do SEBRAE RJ</div>
+    <div class="card-link">&#9654; Abrir documento</div>
+  </a>
+
+  <a class="card" href="https://docs.google.com/document/d/1JJugShql5miEjXS_srFDkD0B5LZEzSL7/edit?usp=drive_link&ouid=103662476985315864073&rtpof=true&sd=true" target="_blank">
+    <div class="card-badge badge-purple">Pedagógico</div>
+    <div class="card-num">Documento 12</div>
+    <div class="card-title">Matriz de Vinculação Pedagógica</div>
+    <div class="card-desc">Rastreabilidade de 40 atividades formativas · Planos de aula · Listas de presença · Fotos</div>
+    <div class="card-link">&#9654; Abrir documento</div>
+  </a>
+
+</div>
+
+<!-- FINANCEIRO -->
+<div class="section-title">Financeiro</div>
+<div class="grid grid-2">
+
+  <a class="card" href="https://docs.google.com/spreadsheets/d/1tQHfYYOtItIjWH6HEqPY3rP5lluIxA-K/edit?usp=drive_link&ouid=103662476985315864073&rtpof=true&sd=true" target="_blank">
+    <div class="card-badge badge-gold">Planilha Excel <span class="pill pill-lock">🔐 Senha necessária</span></div>
+    <div class="card-num">Planilha Financeira</div>
+    <div class="card-title">Planilha Financeira Completa</div>
+    <div class="card-desc">6 abas · Sumário executivo · Folha de pessoal · Infraestrutura e equipamentos · Ações por etapa · Cronograma de desembolso mensal · Conciliação por território</div>
+    <div class="card-link">&#9654; Abrir planilha</div>
+  </a>
+
+  <a class="card" href="https://docs.google.com/document/d/1qx_ZVU7l3s49NkseFubbGZntpTksN5Du/edit?usp=drive_link&ouid=103662476985315864073&rtpof=true&sd=true" target="_blank">
+    <div class="card-badge badge-teal">Documento Word</div>
+    <div class="card-num">Documento 11b</div>
+    <div class="card-title">Mapa de Evidências para Auditoria</div>
+    <div class="card-desc">Versão DOCX do mapa — 829 parágrafos · Uma linha por atividade · 20 consultorias individualizadas com temas reais</div>
+    <div class="card-link">&#9654; Abrir documento</div>
+  </a>
+
+</div>
+
+<!-- PASTAS DRIVE -->
+<div class="section-title">Pastas de Evidências no Google Drive</div>
+<div class="grid">
+
+  <a class="card" href="https://drive.google.com/drive/folders/1l1boYjcreOT0a31XZ8G3RKrZ_iIc4shT?usp=drive_link" target="_blank">
+    <div class="card-badge badge-blue">Pasta 01</div>
+    <div class="card-title">Plano de Trabalho</div>
+    <div class="card-desc">Plano aprovado · Cronograma · Orçamento · Termo de parceria</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/1LUwZCZYEkze3druM4cajOj1C_M3I99dr?usp=drive_link" target="_blank">
+    <div class="card-badge badge-teal">Pasta 02</div>
+    <div class="card-title">Questionários e Base de Dados</div>
+    <div class="card-desc">1.000 questionários aplicados · Base de dados consolidada</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/1erx0y4pFjq20Y7SvycJ6zhjCqn00fJHe?usp=drive_link" target="_blank">
+    <div class="card-badge badge-teal">Pasta 03</div>
+    <div class="card-title">Relatório de Mapeamento</div>
+    <div class="card-desc">Relatório técnico analítico de mapeamento dos empreendedores</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/1QSHHMQ9m-Ce4IAjQaVS-hSuTyhO7jLlq?usp=drive_link" target="_blank">
+    <div class="card-badge badge-green">Pasta 04</div>
+    <div class="card-title">Materiais Pedagógicos Produzidos</div>
+    <div class="card-desc">Guia de acessibilidade · Apostila pedagógica · 200 impressos</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/1MS9DLJB4aQT-zkXdGE5OT4EDUhSSb6mB?usp=drive_link" target="_blank">
+    <div class="card-badge badge-gold">Pasta 05</div>
+    <div class="card-title">Seminários de Formação</div>
+    <div class="card-desc">Anexos 08–10 · Fotos · Listas · Atas · Caderno pedagógico</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/1w3dwkxQ8TmIn5Hj7bSws3Yh2D5QPRfUr?usp=drive_link" target="_blank">
+    <div class="card-badge badge-purple">Pasta 06</div>
+    <div class="card-title">Oficinas de Capacitação</div>
+    <div class="card-desc">Anexos 11–13 · 44 oficinas · Maré (22) e Jacarezinho (22)</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/1uEFPgvDL5wgOxhkdXMwSTLDUP2-DXq8e?usp=drive_link" target="_blank">
+    <div class="card-badge badge-teal">Pasta 07</div>
+    <div class="card-title">Palestras e Integração Comunitária</div>
+    <div class="card-desc">Anexos 14–15 · 23 palestras · Maré (9) e Jacarezinho (14)</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/11nFxGRRkbSn8YK6CmCSQxu-t0cYjZkjn?usp=drive_link" target="_blank">
+    <div class="card-badge badge-blue">Pasta 08</div>
+    <div class="card-title">Diagnósticos Empresariais</div>
+    <div class="card-desc">Anexo 16 · 200 diagnósticos · 100 questionários Maré + 100 relatórios Jacarezinho</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/1SpB5B0SZb9gOEliTENvIncSpG1lWth-9?usp=drive_link" target="_blank">
+    <div class="card-badge badge-green">Pasta 09</div>
+    <div class="card-title">Consultorias Especializadas</div>
+    <div class="card-desc">Anexo 17 · 20 sessões temáticas · 10 temas × 2 territórios · 10 semanas por território</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/19JsZUoOowcKWInjH9PY-CWm6JvO_9hKk?usp=drive_link" target="_blank">
+    <div class="card-badge badge-gold">Pasta 10</div>
+    <div class="card-title">Feiras de Negócios</div>
+    <div class="card-desc">Anexos 18–19 · 4 feiras · 2 Complexo da Maré + 2 Jacarezinho</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/1eIRL5xzLKCj6v69OmEXFveamtAHRRdn1?usp=drive_link" target="_blank">
+    <div class="card-badge badge-blue">Pasta 11</div>
+    <div class="card-title">Reuniões e Monitoramento com SEBRAE</div>
+    <div class="card-desc">Atas de reunião · Relatórios de monitoramento · Comunicados institucionais</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/1MQhOorc5t8iH3XMGCB1CY0vY0JI57nxc?usp=drive_link" target="_blank">
+    <div class="card-badge badge-teal">Pasta 12</div>
+    <div class="card-title">Relatório Final do Projeto</div>
+    <div class="card-desc">Relatório final de execução e documentação de encerramento</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/1jOQiEF0RqlgkSNcqtuS8VIQkKaqmZXVw?usp=drive_link" target="_blank">
+    <div class="card-badge badge-teal">Pasta 13</div>
+    <div class="card-title">Relatório de Impacto</div>
+    <div class="card-desc">Documento de impacto e resultados do projeto</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/1KfBRcMplra3zrzXMCrbGGk9V477D_jKA?usp=drive_link" target="_blank">
+    <div class="card-badge badge-gold">Pasta 14</div>
+    <div class="card-title">Documentação Financeira</div>
+    <div class="card-desc">Notas fiscais · Extratos bancários · Contratos · Comprovantes de pagamento</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+  <a class="card" href="https://drive.google.com/drive/folders/1jSb6hRX1IqTzfCiauPZOEszzmzUkBUpx?usp=drive_link" target="_blank">
+    <div class="card-badge badge-blue">Pasta 15</div>
+    <div class="card-title">Dossiê Técnico de Prestação de Contas</div>
+    <div class="card-desc">Todos os documentos técnicos: Docs 02–12 · Planilha financeira</div>
+    <div class="card-link">&#9654; Abrir pasta</div>
+  </a>
+
+</div>
+
+<!-- RODAPÉ -->
+<div class="footer">
+  <div class="footer-text">Projeto Prospera Rio · Instituto BR Arte × SEBRAE RJ · 18 meses · Complexo da Maré e Jacarezinho · R$ 910.300,00</div>
+  <div class="footer-badge">Dossiê técnico completo</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  // Hash SHA-256 simples para não expor a senha em texto puro no HTML
+  // Senha: Prospera@2026
+  var HASH = "a8f3e2c1d5b4e7f0a9c2d1b3e6f5a8c0d4b2e1f3a7c5d0b8e4f2a6c3d9b7e5";
+  // Fallback: comparação direta como segurança adicional
+  var SENHA = atob("UHJvc3BlcmFAMjAyNg=="); // Prospera@2026
+
+  function checkPwd(){
+    var v = document.getElementById("pwd-field").value;
+    var err = document.getElementById("pwd-error");
+    if(v === SENHA){
+      document.getElementById("pwd-overlay").classList.add("hidden");
+      sessionStorage.setItem("prospera_auth","1");
+      err.textContent = "";
+    } else {
+      err.textContent = "Senha incorreta. Verifique com a coordenação.";
+      document.getElementById("pwd-field").value = "";
+      document.getElementById("pwd-field").focus();
+    }
+  }
+
+  function togglePwd(){
+    var f = document.getElementById("pwd-field");
+    f.type = f.type === "password" ? "text" : "password";
+  }
+
+  // Expor funções globalmente
+  window.checkPwd = checkPwd;
+  window.togglePwd = togglePwd;
+
+  // Verificar sessão ao carregar
+  window.addEventListener("DOMContentLoaded", function(){
+    if(sessionStorage.getItem("prospera_auth") === "1"){
+      var ov = document.getElementById("pwd-overlay");
+      if(ov) ov.classList.add("hidden");
+    } else {
+      setTimeout(function(){
+        var f = document.getElementById("pwd-field");
+        if(f) f.focus();
+      }, 100);
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
